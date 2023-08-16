@@ -1,0 +1,109 @@
+{% extends 'base.html' %}
+{% block title %}BankApp - Homepage{% endblock %}
+{% load crispy_forms_tags %}
+{% block content %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-xl-6">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body p-0">
+                    <div class="row no-gutters">
+                        <div class="p-5">
+                            <div class="mb-4">
+                                <h3 class="h4 font-weight-bold text-primary">Main account</h3>
+                            </div>
+                            <div class="card-text">
+                                <p><strong>Account name:</strong> {{ main_account_name }} <small> <a href="#" class="link-primary link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover" data-bs-toggle="modal" data-bs-target="#main-account"><i class="bi bi-pencil-square"></i></a></small></p>
+                                <p><strong>Balance:</strong> {{ main_account_currency }} {{ main_account_balance }}</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-6">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body p-0">
+                    <div class="row no-gutters">
+                        <div class="p-5">
+                            <div class="mb-4">
+                                <h3 class="h4 font-weight-bold text-primary">All accounts</h3>
+                            </div>
+                            <div class="card-text">
+                                {% for account in all_accounts_data %}
+                                <p><strong>Account name:</strong> {{ account.name }}</p>
+                                <p><strong>Balance:</strong> {{ account.currency }} {{ account.balance }}</p>
+                                <hr>
+                                {% endfor %}
+                            </div>
+                            <div class="card-text">
+                                <strong>Total balance</strong>: {{ total_balance }}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-xl-6">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body p-0">
+                    <div class="row no-gutters">
+                        <div class="p-5">
+                            <div class="mb-4">
+                                <h3 class="h4 font-weight-bold text-success">This month</h3>
+                            </div>
+                            <div class="card-text">
+                                <strong>Total:</strong> {{ total_balance }}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-6">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body p-0">
+                    <div class="row no-gutters">
+                        <div class="p-5">
+                            <div class="mb-4">
+                                <h3 class="h4 font-weight-bold text-success">This year</h3>
+                            </div>
+                            <div class="card-text">
+                                <strong>Total:</strong> {{ total_balance }}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!--MODAL TO CHANGE MAIN ACCOUNT NAME-->
+<div class="modal fade" id="main-account" tabindex="-1" aria-labelledby="main-account" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="exampleModalLabel">Change account name</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cancel"></button>
+            </div>
+            <form method="POST">
+                {% csrf_token %}
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="account-name" class="col-form-label">New name:</label>
+                        <input class="form-control" id="account-name" name="account-name">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-primary">Enter</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
