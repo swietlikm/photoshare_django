@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+{% block title %}PhotoShare{% endblock %}
+{% load crispy_forms_tags %}
+{% block content %}
+<div class="container mt-5">
+    {% for post in posts %}
+        <div class="row justify-content-center mb-4">
+            <div class="col-xl-6">
+                <div class="card border-0 shadow">
+                    <div class="card-body p-0">
+                        <div class="row no-gutters">
+                            <div class="p-5">
+                                <p class="fs-5 fw-bold text-primary d-inline"><a href="{% url 'post_user_grid' post.user.username %}">{{ post.user.username }}</a></p>
+                                <p class="d-inline"> • {{ post.created_at|timesince }} ago</p>
+                                <img src="{{ post.image_url }}" alt="{{ post.description }}" class="img-fluid mt-2 mb-2">
+                                <form method="POST" class="d-inline">
+                                    {% csrf_token %}
+                                    {% if post.liked %}
+                                        <button type="submit" style="border: none; background-color: transparent;" name="post_like_id" value="{{post.id}}"><i class="bi bi-heart-fill heart-icon-fill" style="font-color: red; font-size: 1.5rem"></i></button>
+                                    {% else %}
+                                        <button type="submit" style="border: none; background-color: transparent;" name="post_like_id" value="{{post.id}}"><i class="bi bi-heart heart-icon" style="font-size: 1.5rem"></i></button>
+                                    {% endif %}
+                                </form>
+                                <button type="submit" style="border: none; background-color: transparent;" name="post_like_id" value="{{post.id}}"><i class="bi bi-chat-quote" style="font-size: 1.5rem"></i></button>
+                                <button type="submit" style="border: none; background-color: transparent;" name="post_like_id" value="{{post.id}}"><i class="bi bi-share" style="font-size: 1.5rem"></i></button>
+                                <p class="mt-3 mb-2">Likes: {{ post.total_likes }}</p>
+                                <a href="{% url 'post_details' post.id %}">Comments: {{ post.total_comments }}</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% endfor %}
+</div>
+{% endblock %}

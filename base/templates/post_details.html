@@ -1,0 +1,45 @@
+{% extends 'base.html' %}
+{% block title %}PhotoShare{% endblock %}
+{% load crispy_forms_tags %}
+{% load account %}
+{% user_display user %}
+{% block content %}
+<div class="container mt-5">
+        <div class="row justify-content-center">
+            <div class="col-xl-6">
+                <div class="card border-0 shadow-sm">
+                    <div class="card-body p-0">
+                        <div class="row no-gutters">
+                            <div class="p-5">
+                                <p class="h4 font-weight-bold text-primary">{{ post.user.username }}</p>{{ post.created_at|timesince }}
+                                <img src="{{ post.image_url }}" alt="{{ post.description }}" class="img-fluid">
+                                <i class="bi bi-heart" style="font-color: red; font-size: 1.5rem"></i>
+                                <i class="bi bi-chat-quote" style="font-size: 1.5rem"></i>
+                                <p>Likes: {{ post.total_likes }}</p>
+                                {% for comment in comments %}
+                                    <hr>
+                                    <p>
+                                        {{ comment.user}} | {{ comment.created_at }}
+                                        {% if comment.user == request.user or user.is_staff %}
+                                         |
+                                            <a href="{% url 'comment_update' comment.pk %}"><i class="bi bi-pencil-square"></i></a>
+                                            <i class="bi bi-trash3"></i>
+                                        {% endif %}
+                                    </p>
+
+                                    <p>{{ comment.text }}</p>
+                                {% endfor %}
+                                <hr>
+                                <form method="POST">
+                                    {% csrf_token %}
+                                    {{ form|crispy }}
+                                    <input type="submit" class="btn btn-primary" value="Add">
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+</div>
+{% endblock %}

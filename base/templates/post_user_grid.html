@@ -1,0 +1,74 @@
+{% extends 'base.html' %}
+{% block title %}PhotoShare{% endblock %}
+{% load crispy_forms_tags %}
+{% block content %}
+<style>
+  .hover-darken {
+    transition: 0.15s; /* Add a smooth transition for the effect */
+  }
+
+  .image-container {
+    position: relative;
+    display: inline-block;
+  }
+
+  .hover-darken:hover {
+    filter: brightness(70%); /* Decrease brightness to make the image darker */
+  }
+
+  .hover-info-container {
+    display: none;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+  }
+
+  .image-container:hover .hover-info-container {
+    display: block;
+  }
+
+  .hover-info {
+    display: flex;
+    text-decoration: none;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.2);
+    color: white;
+    padding: 0.5rem;
+  }
+</style>
+<div class="container mt-5">
+  <div class="row justify-content-center mb-3">
+    <div class="col-xl-9">
+      <div class="card border-0 shadow-sm">
+        <div class="card-body p-5">
+          <div class="h3 text-primary">{{ post_user }}</div><hr class="text-secondary">
+          <div class="row row-cols-1 row-cols-md-3">
+            {% for post in posts %}
+              <div class="col no-gutters">
+                <div class="image-container">
+                  <a href="{% url 'post_details' post.id %}">
+                    <img src="{{ post.image_url }}" alt="{{ post.description }}" class="hover-darken img-fluid object-fit-cover p-1" style="width: 300px; height: 300px;">
+                  </a>
+                  <div class="hover-info-container">
+                    <a href="{% url 'post_details' post.id %}" class="hover-info">
+                      <p><i class="bi bi-heart-fill" style="font-color: red; font-size: 1.5rem"></i> {{ post.total_likes }}
+                      <i class="bi bi-chat-quote-fill" style="font-size: 1.5rem"></i>{{ post.total_comments }}</p>
+                    </a>
+                  </div>
+                </div>
+              </div>
+            {% endfor %}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+{% endblock %}
