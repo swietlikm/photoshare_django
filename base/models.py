@@ -5,12 +5,12 @@ import uuid
 
 class Post(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    image = models.ImageField(null=True, blank=True)
+    image = models.ImageField()
     description = models.TextField(null=True, blank=True)
-    user = models.ForeignKey(User, related_name='posts', on_delete=models.DO_NOTHING)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     likes = models.ManyToManyField(User, related_name='postlikes', blank=True)
+    user = models.ForeignKey(User, related_name='posts', on_delete=models.DO_NOTHING)
 
     objects = models.Manager()
 
@@ -39,6 +39,21 @@ class Post(models.Model):
 
     class Meta:
         ordering = ['-created_at']
+
+
+class Follow(models.Model):
+    follower = models.ForeignKey(User, related_name='following', on_delete=models.CASCADE)
+    following = models.ForeignKey(User, related_name='followers', on_delete=models.CASCADE)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    objects = models.Manager()
+
+    def __str__(self):
+        return f"{self.follower.username} follows {self.following.username}"
+
+    class Meta:
+        unique_together = ['follower', 'following']
+
 
 class Comment(models.Model):
     post = models.ForeignKey(Post, related_name='comments', on_delete=models.CASCADE)

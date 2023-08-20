@@ -46,7 +46,19 @@
     <div class="col-xl-9">
       <div class="card border-0 shadow-sm">
         <div class="card-body p-5">
-          <div class="h3 text-primary">{{ post_user }}</div><hr class="text-secondary">
+          <form method="POST">
+            <div class="h3 text-primary d-inline">{{ post_user }}</div>
+            {% csrf_token %}
+            {% if is_followed %}
+              <button type="submit" class="btn btn-outline-primary d-inline" name="follow" value="{{ post_user }}">Unfollow</button>
+            {% else %}
+              <button type="submit" class="btn btn-primary" name="follow" value="{{ post_user }}">Follow</button>
+            {% endif %}
+          </form>
+          <p>Posts: {{ posts_count }}</p>
+          <p>Followers: {{ followers }}</p>
+          <p>Following: {{ following }}</p>
+          <hr class="text-secondary">
           <div class="row row-cols-1 row-cols-md-3">
             {% for post in posts %}
               <div class="col no-gutters">

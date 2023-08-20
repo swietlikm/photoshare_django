@@ -13,55 +13,60 @@
     {% block title %}PhotoShare{% endblock %}
   </title>
 </head>
-<header>
-  <nav class="navbar navbar-expand-lg bg-body-tertiary shadow-sm" data-bs-theme="light">
-    <div class="container">
-      <div>
-        <ul class="navbar-nav me-auto">
-          <li class="navbar-brand">
-            <a class="nav-link fw-semibold text-primary fs-4" href="{% url 'index' %}">PhotoShare</a>
-          </li>
-        </ul>
-      </div>
-      <div>
-        <ul class="navbar-nav">
-          {% if user.is_authenticated %}
-            {% if user.is_superuser %}
+    <style>
+        .sidebar {
+            height: 100vh;
+            width: 250px;
+            position: fixed;
+            top: 0;
+            left: 0;
+            background-color: #f8f9fa;
+            padding: 20px;
+        }
+
+        .content {
+            margin-left: 250px;
+            padding: 20px;
+        }
+    </style>
+<nav>
+    <div class="sidebar shadow">
+        <a class="h2 text-primary text-decoration-none" href="{% url 'index' %}">PhotoShare</a>
+        <ul class="nav flex-column mt-3 fs-5">
             <li class="nav-item">
-              <a class="nav-link" href="{% url 'admin:index' %}">Admin</a>
+                <a class="nav-link" href="{% url 'index' %}">Home</a>
             </li>
-            <li class="nav-item py-2 py-lg-1 col-12 col-lg-auto">
-              <div class="vr d-none d-lg-flex h-100 mx-lg-2 text-grey-50"></div>
-              <hr class="d-lg-none my-2 text-white-50">
-            </li>
+            {% if user.is_authenticated %}
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'post_add' %}">Add</a>
+                </li>
+                {% if user.is_staff %}
+                <li class="nav-item">
+                    <a class="nav-link text-danger" href="{% url 'admin:index' %}">Admin</a>
+                </li>
+                {% endif %}
+                <li class="nav-item dropdown dropdown-left">
+                    <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                      {{user.username|title}}
+                    </a>
+                    <ul class="dropdown-menu dopdown-menu-end">
+                      <li><a class="dropdown-item" href="{% url 'post_user_grid' request.user.username %}"><i class="bi bi-person"></i> Profile</a></li>
+                      <li><a class="dropdown-item" href="#"><i class="bi bi-person"></i> Manage account</a></li>
+                      <li><hr class="dropdown-divider"></li>
+                      <li><a class="dropdown-item" href="{% url 'account_logout' %}"><i class="bi bi-box-arrow-right"></i> Logout</a></li>
+                    </ul>
+                </li>
+            {% else %}
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'account_login' %}">Login</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'account_signup' %}">Register</a>
+                </li>
             {% endif %}
-          <li class="nav-item dropdown dropdown-left">
-            <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-              {{user.username|title}}
-            </a>
-            <ul class="dropdown-menu dopdown-menu-end">
-              {% comment %}<li><a class="dropdown-item" href="{% url 'account_profile' request.user.id %}"><i class="bi bi-person"></i> Manage account</a></li>{% endcomment %}
-              <li><hr class="dropdown-divider"></li>
-              <li><a class="dropdown-item" href="{% url 'account_logout' %}"><i class="bi bi-box-arrow-right"></i> Logout</a></li>
-            </ul>
-          </li>
-          {% else %}
-          <li class="nav-item">
-            <a class="btn btn-primary btn-sm" href="{% url 'account_login' %}"><i class="bi bi-person-fill me-2"></i> Login</a>
-          </li>
-          <li class="nav-item py-2 py-lg-1 col-12 col-lg-auto">
-            <div class="vr d-none d-lg-flex h-100 mx-lg-2 text-grey-50"></div>
-            <hr class="d-lg-none my-2 text-white-50">
-          </li>
-          <li class="nav-item">
-            <a class="btn btn-outline-primary btn-sm" href="{% url 'account_signup' %}">Register</a>
-          </li>
-          {% endif %}
         </ul>
-      </div>
     </div>
-  </nav>
-</header>
+</nav>
 <body class="">
   <div class="container">
     {% block content %}
@@ -77,7 +82,7 @@
   <footer class="row row-cols-1 row-cols-sm-2 row-cols-md-5 py-5 my-5 border-top">
     <div class="col">
       <a href="/" class="d-flex align-items-center mb-3 link-body-emphasis text-decoration-none">
-        <h4>BankApp</h4>
+        <h4>PhotoShare</h4>
       </a>
       <p class="text-body-secondary">© 2023</p>
     </div>
@@ -91,7 +96,7 @@
       <ul class="nav flex-column">
         <li class="nav-item mb-2"><a href="{% url 'index' %}" class="nav-link p-0 text-body-secondary">Home</a></li>
         <li class="nav-item mb-2"><a href="#" class="nav-link p-0 text-body-secondary">Features</a></li>
-        <li class="nav-item mb-2"><a href="#" class="nav-link p-0 text-body-secondary">Currency Exchange</a></li>
+        <li class="nav-item mb-2"><a href="#" class="nav-link p-0 text-body-secondary">Pricing</a></li>
         <li class="nav-item mb-2"><a href="#" class="nav-link p-0 text-body-secondary">FAQs</a></li>
         <li class="nav-item mb-2"><a href="#" class="nav-link p-0 text-body-secondary">About</a></li>
       </ul>
