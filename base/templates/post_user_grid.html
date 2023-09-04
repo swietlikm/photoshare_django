@@ -47,13 +47,16 @@
       <div class="card border-0 shadow-sm">
         <div class="card-body p-5">
           <div class="row">
-            <div class="col col-lg-4">
-              <img src="https://icon-library.com/images/no-profile-picture-icon/no-profile-picture-icon-12.jpg" class="img-fluid object-fit-cover rounded-circle">
+            <div class="col col-lg-3">
+              <img src="https://icon-library.com/images/no-profile-picture-icon/no-profile-picture-icon-12.jpg" class="img-fluid object-fit-cover rounded-circle shadow-sm">
+            </div>
+            <div class="col col-lg-1">
+
             </div>
             <div class="col">
               <div class="row">
                 <form method="POST">
-                  <div class="h3 text-primary d-inline">{{ post_user }}</div>
+                  <div class="h3 text-primary d-inline align-middle">{{ post_user }}</div>
                     {% if post_user != request.user %}
                       {% csrf_token %}
                       {% if is_followed %}
@@ -64,6 +67,7 @@
                     {% endif %}
                 </form>
                 </div>
+                <div class="row"><p></p></div>
                 <div class="row">
                   <div class="col"><p>Posts: {{ posts_count }}</p></div>
                   <div class="col"><p>Followers: {{ followers }}</p></div>
