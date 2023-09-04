@@ -1,3 +1,4 @@
+from django.contrib.auth import get_user_model
 from django.contrib.auth.models import User
 from django.db import models
 import uuid
@@ -24,10 +25,6 @@ class Post(models.Model):
         except:
             img = ''
         return img
-
-    @property
-    def liked(self):
-        return self.likes.filter(id=self.user.id).exists()
 
     @property
     def total_likes(self):

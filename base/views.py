@@ -14,8 +14,23 @@ class HomePageView(TemplateView):
 
     def get(self, request, *args, **kwargs):
         posts = Post.objects.all()
+
+        posts_data = []
+        for post in posts:
+            data = {
+                'id': post.id,
+                'image_url': post.image_url,
+                'description': post.description,
+                'user': post.user,
+                'total_likes': post.total_likes,
+                'total_comments': post.total_comments,
+                'created_at': post.created_at,
+                'is_liked': True if post.likes.filter(id=self.request.user.id).exists() else False
+            }
+            posts_data.append(data)
+
         context = {
-            'posts': posts
+            'posts': posts_data,
         }
         return render(request, self.template_name, context=context)
 
@@ -91,6 +106,13 @@ class PostUserGridView(ListView):
     template_name = 'post_user_grid.html'
     model = Post
     context_object_name = 'posts'
+
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        username = self.kwargs.get('username')
+        user = get_object_or_404(User, username=username)
+        queryset = queryset.filter(user=user)
+        return queryset
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)

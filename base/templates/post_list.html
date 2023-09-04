@@ -10,7 +10,7 @@
                     <div class="card-body p-0">
                         <div class="row no-gutters">
                             <div class="p-5">
-                                <p class="fs-5 fw-bold text-primary d-inline"><a href="{% url 'post_user_grid' post.user.username %}">{{ post.user.username }}</a></p>
+                                <p class="fs-5 fw-bold text-primary d-inline"><a href="{% url 'post_user_grid' post.user.username %}" class="text-decoration-none">{{ post.user.username }}</a></p>
                                 <p class="d-inline"> • {{ post.created_at|timesince }} ago</p>
                                 {% if post.user == request.user %}
                                     <p class="d-inline"><a href="{% url 'post_update' post.id %}">Edit</a></p>
@@ -18,7 +18,7 @@
                                 <img src="{{ post.image_url }}" alt="{{ post.description }}" class="img-fluid mt-2 mb-2">
                                 <form method="POST" class="d-inline">
                                     {% csrf_token %}
-                                    {% if post.liked %}
+                                    {% if post.is_liked %}
                                         <button type="submit" style="border: none; background-color: transparent;" name="post_like_id" value="{{post.id}}"><i class="bi bi-heart-fill heart-icon-fill text-danger" style="font-size: 1.5rem"></i></button>
                                     {% else %}
                                         <button type="submit" style="border: none; background-color: transparent;" name="post_like_id" value="{{post.id}}"><i class="bi bi-heart heart-icon" style="font-size: 1.5rem"></i></button>
@@ -27,9 +27,9 @@
                                 <button type="submit" style="border: none; background-color: transparent;" name="post_like_id" value="{{post.id}}"><i class="bi bi-chat-quote" style="font-size: 1.5rem"></i></button>
                                 <button type="submit" style="border: none; background-color: transparent;" name="post_like_id" value="{{post.id}}"><i class="bi bi-share" style="font-size: 1.5rem"></i></button>
                                 <p class="mt-3 mb-2">Likes: {{ post.total_likes }}</p>
-                                <p class="fw-bold text-primary d-inline"><a href="{% url 'post_user_grid' post.user.username %}">{{ post.user.username }}</a></p>
+                                <p class="fw-bold text-primary d-inline"><a href="{% url 'post_user_grid' post.user.username %}" class="text-decoration-none">{{ post.user.username }}</a></p>
                                 <p>{{ post.description }}</p>
-                                <a href="{% url 'post_details' post.id %}">Comments: {{ post.total_comments }}</a>
+                                <a href="{% url 'post_details' post.id %}" class="text-decoration-none">Comments: {{ post.total_comments }}</a>
                             </div>
                         </div>
                     </div>
