@@ -1,3 +1,4 @@
+from django.contrib.auth import get_user_model
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import HttpResponseRedirect
 from django.shortcuts import render, get_object_or_404, redirect
@@ -5,8 +6,8 @@ from django.urls import reverse_lazy, reverse
 from django.views.generic import TemplateView, FormView, CreateView, DetailView, UpdateView, ListView
 from django.contrib.auth.models import User
 
-from .forms import PostForm, CommentForm
-from .models import Post, Comment, Follow
+from .forms import PostForm, CommentForm, UserProfileEditForm
+from .models import Post, Comment, Follow, UserProfile
 
 
 class HomePageView(TemplateView):
@@ -120,7 +121,17 @@ class PostUserGridView(ListView):
         context['posts_count'] = posts.count()
 
         f_post = posts.first()
+        post_user = f_post.user
         context['post_user'] = f_post.user
+
+        avatar = None
+        try:
+            avatar = post_user.userprofile.avatar_image_url
+        except:
+            avatar = '\images\default_user_avatar.jpg'
+
+        if avatar:
+            context['avatar_image'] = avatar
 
         followers = Follow.objects.filter(following=f_post.user).count()
         context['followers'] = followers
@@ -145,3 +156,18 @@ class PostUserGridView(ListView):
             follow.save()
         redirect_url = reverse('post_user_grid', kwargs={'username': username})
         return redirect(redirect_url)
+
+
+class UserProfileEditView(LoginRequiredMixin, UpdateView):
+    model = UserProfile
+    template_name = 'user_profile_edit.html'
+    form_class = UserProfileEditForm
+    success_url = reverse_lazy('user_profile_edit')
+
+    def get_object(self, queryset=None):
+        user_profile, created = UserProfile.objects.get_or_create(user=self.request.user)
+        return user_profile
+
+    def form_valid(self, form):
+        form.instance.user = self.request.user
+        return super().form_valid(form)

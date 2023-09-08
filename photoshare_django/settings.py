@@ -4,6 +4,9 @@ Django settings for photoshare_django project.
 
 from pathlib import Path
 
+from django.shortcuts import redirect
+from django.urls import reverse
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -119,6 +122,7 @@ USE_I18N = True
 USE_TZ = True
 
 LOGIN_URL = 'account_login'
+LOGIN_REDIRECT_URL = 'index'
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.2/howto/static-files/

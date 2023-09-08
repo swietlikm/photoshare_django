@@ -1,23 +1,25 @@
 {% extends 'base.html' %}
-{% block title %}BankApp - Homepage{% endblock %}
+{% block title %}Login{% endblock %}
 {% load crispy_forms_tags %}
-{% load account %}
-{% user_display user %}
 {% block content %}
-<div class="container mt-5">
+{% load socialaccount %}
+
+<div id="main-wrapper" class="container mt-5">
     <div class="row justify-content-center">
-        <div class="col-xl-8">
-            <div class="card border-0 shadow-sm">
+        <div class="col-xl-6">
+            <div class="card border-0 shadow">
                 <div class="card-body p-0">
                     <div class="row no-gutters">
                         <div class="p-5">
                             <div class="mb-4">
-                                <h3 class="h4 font-weight-bold text-primary">Edit post</h3>
+                                <h3 class="h4 font-weight-bold text-primary">User Profile</h3>
                             </div>
                             <form method="POST" enctype="multipart/form-data">
                                 {% csrf_token %}
                                 {{ form|crispy }}
-                                <input type="submit" class="btn btn-primary" value="Update">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <button type="submit" class="btn btn-primary mt-1">Update</button>
+                                </div>
                             </form>
                         </div>
                     </div>
@@ -26,4 +28,4 @@
         </div>
     </div>
 </div>
-{% endblock %}
+{% endblock content %}

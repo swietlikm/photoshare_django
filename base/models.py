@@ -1,4 +1,3 @@
-from django.contrib.auth import get_user_model
 from django.contrib.auth.models import User
 from django.db import models
 import uuid
@@ -6,7 +5,7 @@ import uuid
 
 class Post(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    image = models.ImageField()
+    image = models.ImageField(blank=False)
     description = models.TextField(null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -67,3 +66,22 @@ class Comment(models.Model):
 
     class Meta:
         ordering = ['-created_at']
+
+
+class UserProfile(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='userprofile')
+    avatar_image = models.ImageField(blank=True)
+
+    objects = models.Manager()
+
+    def __str__(self):
+        return f"@{self.user}"
+
+    @property
+    def avatar_image_url(self):
+        try:
+            img = self.avatar_image.url
+        except:
+            img = ''
+        return img
+
