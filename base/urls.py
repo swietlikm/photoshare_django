@@ -12,4 +12,6 @@ urlpatterns = [
     path('post/<uuid:pk>/update', views.PostUpdateView.as_view(), name='post_update'),
 
     path('comment/<int:pk>/update/', views.CommentUpdateView.as_view(), name='comment_update'),
+
+    path('explore/tags/<str:hashtag>', views.HashtagPostListView.as_view(), name='explore_tags'),
 ]

@@ -1,12 +1,11 @@
-from django.contrib.auth import get_user_model
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.models import User
 from django.http import HttpResponseRedirect
 from django.shortcuts import render, get_object_or_404, redirect
 from django.urls import reverse_lazy, reverse
-from django.views.generic import TemplateView, FormView, CreateView, DetailView, UpdateView, ListView
-from django.contrib.auth.models import User
+from django.views.generic import TemplateView, CreateView, UpdateView, ListView
 
-from .forms import PostForm, CommentForm, UserProfileEditForm
+from .forms import CommentForm, UserProfileEditForm
 from .models import Post, Comment, Follow, UserProfile
 
 
@@ -18,11 +17,16 @@ class HomePageView(TemplateView):
 
         posts_data = []
         for post in posts:
+            if hasattr(post.user, 'userprofile'):
+                avatar = post.user.userprofile.avatar_image_url
+            else:
+                avatar = 'images/default_user_avatar.jpg'
             data = {
                 'id': post.id,
                 'image_url': post.image_url,
                 'description': post.description,
                 'user': post.user,
+                'avatar_image': avatar,
                 'total_likes': post.total_likes,
                 'total_comments': post.total_comments,
                 'created_at': post.created_at,
@@ -124,14 +128,11 @@ class PostUserGridView(ListView):
         post_user = f_post.user
         context['post_user'] = f_post.user
 
-        avatar = None
-        try:
+        if hasattr(post_user, 'userprofile'):
             avatar = post_user.userprofile.avatar_image_url
-        except:
-            avatar = '\images\default_user_avatar.jpg'
-
-        if avatar:
-            context['avatar_image'] = avatar
+        else:
+            avatar = 'images/default_user_avatar.jpg'
+        context['avatar_image'] = avatar
 
         followers = Follow.objects.filter(following=f_post.user).count()
         context['followers'] = followers
@@ -171,3 +172,13 @@ class UserProfileEditView(LoginRequiredMixin, UpdateView):
     def form_valid(self, form):
         form.instance.user = self.request.user
         return super().form_valid(form)
+
+
+class HashtagPostListView(ListView):
+    model = Post
+    template_name = 'explore_tags_list.html'
+    context_object_name = 'posts'
+
+    def get_queryset(self):
+        hashtag = self.kwargs['hashtag']
+        return Post.objects.filter(description__contains=f'#{hashtag}')

@@ -11,7 +11,7 @@
                     <div class="card-body p-0">
                         <div class="row no-gutters">
                             <div class="p-5">
-                                <p class="fs-5 fw-bold text-primary d-inline"><a href="{% url 'post_user_grid' post.user.username %}" class="text-decoration-none">{{ post.user.username }}</a></p>
+                                <img src="{{ post.avatar_image }}" height="32" width="32" class="object-fit-cover rounded-circle"><p class="fs-5 fw-bold text-primary d-inline ps-3"><a href="{% url 'post_user_grid' post.user.username %}" class="text-decoration-none">{{ post.user.username }}</a></p>
                                 <p class="d-inline"> • {{ post.created_at|timesince }} ago</p>
                                 {% if post.user == request.user or user.is_staff %}
                                     <p class="d-inline"><a href="{% url 'post_update' post.id %}"><i class="bi bi-pencil-square text-secondary" style="font-size: 1.2rem"></i></a></p>

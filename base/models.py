@@ -82,6 +82,5 @@ class UserProfile(models.Model):
         try:
             img = self.avatar_image.url
         except:
-            img = ''
+            img = '\static\images\default_user_avatar.jpg'
         return img
-
