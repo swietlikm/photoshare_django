@@ -9,18 +9,26 @@ from .forms import CommentForm, UserProfileEditForm
 from .models import Post, Comment, Follow, UserProfile
 
 
-class HomePageView(TemplateView):
-    template_name = 'post_list.html'
+def get_default_avatar(request):
+    domain = request.build_absolute_uri('/')[:-1]
+    return f'{domain}\images\default_user_avatar.jpg'
 
-    def get(self, request, *args, **kwargs):
-        posts = Post.objects.all()
+
+class AllPostsListView(ListView):
+    template_name = 'post_list.html'
+    model = Post
+    context_object_name = 'posts'
+
+    def get_context_data(self, *, object_list=None, **kwargs):
+        context = super().get_context_data(object_list=None, **kwargs)
+        posts = context.get('posts')
 
         posts_data = []
         for post in posts:
             if hasattr(post.user, 'userprofile'):
                 avatar = post.user.userprofile.avatar_image_url
             else:
-                avatar = 'images/default_user_avatar.jpg'
+                avatar = get_default_avatar(self.request)
             data = {
                 'id': post.id,
                 'image_url': post.image_url,
@@ -37,17 +45,19 @@ class HomePageView(TemplateView):
         context = {
             'posts': posts_data,
         }
-        return render(request, self.template_name, context=context)
+        return context
 
     def post(self, request, *args, **kwargs):
         # Like post
         post_like_id = request.POST.get("post_like_id")
-        if post_like_id:
+        if post_like_id and self.request.user.is_authenticated:
             post = Post.objects.get(id=post_like_id)
             if post.likes.filter(id=request.user.id).exists():
                 post.likes.remove(request.user)
             else:
                 post.likes.add(request.user)
+        elif post_like_id:
+            return redirect(reverse('account_login'))
         return HttpResponseRedirect(request.path_info)
 
 
@@ -77,7 +87,24 @@ class PostDetailView(TemplateView):
         uuid = kwargs.get('pk')
         post = get_object_or_404(Post, id=uuid)
         comments = Comment.objects.filter(post=post)
-        context['post'] = post
+
+        if hasattr(post.user, 'userprofile'):
+            avatar = post.user.userprofile.avatar_image_url
+        else:
+            avatar = get_default_avatar(self.request)
+        post_data = {
+            'id': post.id,
+            'image_url': post.image_url,
+            'description': post.description,
+            'user': post.user,
+            'avatar_image': avatar,
+            'total_likes': post.total_likes,
+            'total_comments': post.total_comments,
+            'created_at': post.created_at,
+            'is_liked': True if post.likes.filter(id=self.request.user.id).exists() else False
+        }
+
+        context['post'] = post_data
         context['comments'] = comments
         context['form'] = CommentForm
         return context
@@ -131,7 +158,7 @@ class PostUserGridView(ListView):
         if hasattr(post_user, 'userprofile'):
             avatar = post_user.userprofile.avatar_image_url
         else:
-            avatar = 'images/default_user_avatar.jpg'
+            avatar = get_default_avatar(self.request)
         context['avatar_image'] = avatar
 
         followers = Follow.objects.filter(following=f_post.user).count()
@@ -174,11 +201,14 @@ class UserProfileEditView(LoginRequiredMixin, UpdateView):
         return super().form_valid(form)
 
 
-class HashtagPostListView(ListView):
-    model = Post
+class HashtagPostListView(AllPostsListView):
     template_name = 'explore_tags_list.html'
-    context_object_name = 'posts'
 
     def get_queryset(self):
         hashtag = self.kwargs['hashtag']
         return Post.objects.filter(description__contains=f'#{hashtag}')
+
+    def get_context_data(self, *, object_list=None, **kwargs):
+        context = super().get_context_data()
+        context['hashtag'] = self.kwargs['hashtag']
+        return context
