@@ -3,7 +3,7 @@ from django.contrib.auth.models import User
 from django.http import HttpResponseRedirect
 from django.shortcuts import render, get_object_or_404, redirect
 from django.urls import reverse_lazy, reverse
-from django.views.generic import TemplateView, CreateView, UpdateView, ListView
+from django.views.generic import TemplateView, CreateView, UpdateView, ListView, DeleteView
 
 from .forms import CommentForm, UserProfileEditForm
 from .models import Post, Comment, Follow, UserProfile
@@ -62,9 +62,9 @@ class AllPostsListView(ListView):
 
 
 class PostAddView(LoginRequiredMixin, CreateView):
+    template_name = 'post_add.html'
     model = Post
     fields = ['image', 'description']
-    template_name = 'post_add.html'
     success_url = reverse_lazy('index')
 
     def form_valid(self, form):
@@ -73,65 +73,113 @@ class PostAddView(LoginRequiredMixin, CreateView):
 
 
 class PostUpdateView(LoginRequiredMixin, UpdateView):
+    template_name = 'post_update.html'
     model = Post
     fields = ['image', 'description']
-    template_name = 'post_update.html'
     success_url = reverse_lazy('index')
 
 
-class PostDetailView(TemplateView):
+class PostDeleteView(LoginRequiredMixin, DeleteView):
+    template_name = 'post_delete.html'
+    model = Post
+    success_url = reverse_lazy('index')
+
+
+# class PostDetailView(TemplateView):
+#     template_name = 'post_details.html'
+#
+#     def get_context_data(self, **kwargs):
+#         context = super().get_context_data()
+#         uuid = kwargs.get('pk')
+#         post = get_object_or_404(Post, id=uuid)
+#         comments = Comment.objects.filter(post=post)
+#
+#         if hasattr(post.user, 'userprofile'):
+#             avatar = post.user.userprofile.avatar_image_url
+#         else:
+#             avatar = get_default_avatar(self.request)
+#         post_data = {
+#             'id': post.id,
+#             'image_url': post.image_url,
+#             'description': post.description,
+#             'user': post.user,
+#             'avatar_image': avatar,
+#             'total_likes': post.total_likes,
+#             'total_comments': post.total_comments,
+#             'created_at': post.created_at,
+#             'is_liked': True if post.likes.filter(id=self.request.user.id).exists() else False
+#         }
+#
+#         context['post'] = post_data
+#         context['comments_enabled'] = True
+#         context['comments'] = comments
+#         context['form'] = CommentForm
+#         return context
+#
+#     def post(self, request, *args, **kwargs):
+#         pk = kwargs.get('pk')
+#         post = get_object_or_404(Post, pk=pk)
+#         form = CommentForm(request.POST)
+#         if form.is_valid():
+#             text = form.cleaned_data['text']
+#             comment = Comment(user=self.request.user, post=post, text=text)
+#             comment.save()
+#         redirect_url = reverse('post_details', kwargs={'pk': pk})
+#         return redirect(redirect_url)
+class PostDetailView(AllPostsListView):
     template_name = 'post_details.html'
 
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data()
-        uuid = kwargs.get('pk')
-        post = get_object_or_404(Post, id=uuid)
-        comments = Comment.objects.filter(post=post)
+    def get_queryset(self):
+        uuid = self.kwargs.get('pk')
+        queryset = Post.objects.filter(id=uuid)
+        return queryset
 
-        if hasattr(post.user, 'userprofile'):
-            avatar = post.user.userprofile.avatar_image_url
-        else:
-            avatar = get_default_avatar(self.request)
-        post_data = {
-            'id': post.id,
-            'image_url': post.image_url,
-            'description': post.description,
-            'user': post.user,
-            'avatar_image': avatar,
-            'total_likes': post.total_likes,
-            'total_comments': post.total_comments,
-            'created_at': post.created_at,
-            'is_liked': True if post.likes.filter(id=self.request.user.id).exists() else False
-        }
-
-        context['post'] = post_data
+    def get_context_data(self, *, object_list=None, **kwargs):
+        context = super().get_context_data(object_list=None, **kwargs)
+        posts = context['posts']
+        post = posts[0]
+        context['post'] = post
+        context['comments_enabled'] = True
+        post_object = get_object_or_404(self.get_queryset())
+        comments = Comment.objects.filter(post=post_object)
         context['comments'] = comments
         context['form'] = CommentForm
         return context
 
     def post(self, request, *args, **kwargs):
-        pk = kwargs.get('pk')
-        post = get_object_or_404(Post, pk=pk)
+        pk = self.kwargs.get('pk')
+        post = get_object_or_404(self.get_queryset())
+
         form = CommentForm(request.POST)
         if form.is_valid():
             text = form.cleaned_data['text']
             comment = Comment(user=self.request.user, post=post, text=text)
             comment.save()
-        redirect_url = reverse('post_details', kwargs={'pk': pk})
-        return redirect(redirect_url)
+            redirect_url = reverse('post_details', kwargs={'pk': str(pk)})
+            return redirect(redirect_url)
+
+        return super().post(request, *args, **kwargs)
 
 
 class CommentUpdateView(UpdateView):
     template_name = 'comment_update.html'
     model = Comment
     fields = ['text']
-    context_object_name = 'comment'
 
     def get_success_url(self):
-        context = self.get_context_data()
-        comment = context['comment']
+        comment = self.get_object()
         redirect_url = reverse('post_details', kwargs={'pk': str(comment.post.pk)})
-        return redirect(redirect_url)
+        return redirect_url
+
+
+class CommentDeleteView(DeleteView):
+    template_name = 'comment_delete.html'
+    model = Comment
+
+    def get_success_url(self):
+        comment = self.get_object()
+        redirect_url = reverse('post_details', kwargs={'pk': str(comment.post.pk)})
+        return redirect_url
 
 
 class PostUserGridView(ListView):
