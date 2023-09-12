@@ -1,9 +1,9 @@
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.models import User
 from django.http import HttpResponseRedirect
-from django.shortcuts import render, get_object_or_404, redirect
+from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse_lazy, reverse
-from django.views.generic import TemplateView, CreateView, UpdateView, ListView, DeleteView
+from django.views.generic import CreateView, UpdateView, ListView, DeleteView
 
 from .forms import CommentForm, UserProfileEditForm
 from .models import Post, Comment, Follow, UserProfile
@@ -85,47 +85,6 @@ class PostDeleteView(LoginRequiredMixin, DeleteView):
     success_url = reverse_lazy('index')
 
 
-# class PostDetailView(TemplateView):
-#     template_name = 'post_details.html'
-#
-#     def get_context_data(self, **kwargs):
-#         context = super().get_context_data()
-#         uuid = kwargs.get('pk')
-#         post = get_object_or_404(Post, id=uuid)
-#         comments = Comment.objects.filter(post=post)
-#
-#         if hasattr(post.user, 'userprofile'):
-#             avatar = post.user.userprofile.avatar_image_url
-#         else:
-#             avatar = get_default_avatar(self.request)
-#         post_data = {
-#             'id': post.id,
-#             'image_url': post.image_url,
-#             'description': post.description,
-#             'user': post.user,
-#             'avatar_image': avatar,
-#             'total_likes': post.total_likes,
-#             'total_comments': post.total_comments,
-#             'created_at': post.created_at,
-#             'is_liked': True if post.likes.filter(id=self.request.user.id).exists() else False
-#         }
-#
-#         context['post'] = post_data
-#         context['comments_enabled'] = True
-#         context['comments'] = comments
-#         context['form'] = CommentForm
-#         return context
-#
-#     def post(self, request, *args, **kwargs):
-#         pk = kwargs.get('pk')
-#         post = get_object_or_404(Post, pk=pk)
-#         form = CommentForm(request.POST)
-#         if form.is_valid():
-#             text = form.cleaned_data['text']
-#             comment = Comment(user=self.request.user, post=post, text=text)
-#             comment.save()
-#         redirect_url = reverse('post_details', kwargs={'pk': pk})
-#         return redirect(redirect_url)
 class PostDetailView(AllPostsListView):
     template_name = 'post_details.html'
 
@@ -151,15 +110,15 @@ class PostDetailView(AllPostsListView):
         post = get_object_or_404(self.get_queryset())
 
         form = CommentForm(request.POST)
-        if form.is_valid():
+        if form.is_valid() and self.request.user.is_authenticated:
             text = form.cleaned_data['text']
             comment = Comment(user=self.request.user, post=post, text=text)
             comment.save()
             redirect_url = reverse('post_details', kwargs={'pk': str(pk)})
             return redirect(redirect_url)
-
+        elif form.is_valid() and not self.request.user.is_authenticated:
+            return HttpResponseRedirect(reverse_lazy('account_login'))
         return super().post(request, *args, **kwargs)
-
 
 class CommentUpdateView(UpdateView):
     template_name = 'comment_update.html'
