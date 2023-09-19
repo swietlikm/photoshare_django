@@ -2,6 +2,8 @@ from django.contrib.auth.models import User
 from django.db import models
 import uuid
 
+from django.utils.safestring import mark_safe
+
 
 class Post(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
@@ -24,6 +26,9 @@ class Post(models.Model):
         except:
             img = ''
         return img
+
+    def image_preview(self):  # new
+        return mark_safe(f'<img src = "{self.image_url}" width = "300"/>')
 
     @property
     def total_likes(self):
