@@ -48,18 +48,18 @@
         <div class="card-body p-5">
           <div class="row">
             <div class="col col-lg-4 text-center">
-              <img src="{{ avatar_image }}" height="200" width="200" class="object-fit-cover rounded-circle shadow">
+              <img src="{{ avatar }}" height="200" width="200" class="object-fit-cover rounded-circle shadow">
             </div>
             <div class="col">
               <div class="row">
                 <form method="POST">
-                  <div class="h3 text-primary d-inline align-middle">{{ post_user }}</div>
-                    {% if post_user != request.user %}
+                  <div class="h3 text-primary d-inline align-middle">{{ profile_owner }}</div>
+                    {% if profile_owner != request.user %}
                       {% csrf_token %}
                       {% if is_followed %}
                         <button type="submit" class="btn btn-outline-primary d-inline" name="follow" value="{{ post_user }}">Unfollow</button>
                       {% else %}
-                        <button type="submit" class="btn btn-primary" name="follow" value="{{ post_user }}">Follow</button>
+                        <button type="submit" class="btn btn-primary" name="follow" value="{{ profile_owner }}">Follow</button>
                       {% endif %}
                     {% endif %}
                 </form>
@@ -88,6 +88,8 @@
                   </div>
                 </div>
               </div>
+            {% empty %}
+              <div class="h3 text-center mt-3">No posts yet</div>
             {% endfor %}
           </div>
         </div>

@@ -1,12 +1,11 @@
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.contrib.auth.models import User
 from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse_lazy, reverse
-from django.views.generic import CreateView, UpdateView, ListView, DeleteView
+from django.views.generic import CreateView, UpdateView, ListView, DeleteView, DetailView
 
 from .forms import CommentForm, UserProfileEditForm
-from .models import Post, Comment, Follow, UserProfile
+from .models import User, UserProfile, Post, Comment, Follow
 
 
 def get_default_avatar(request):
@@ -20,21 +19,16 @@ class AllPostsListView(ListView):
     context_object_name = 'posts'
 
     def get_context_data(self, *, object_list=None, **kwargs):
-        context = super().get_context_data(object_list=None, **kwargs)
-        posts = context.get('posts')
+        posts = self.get_queryset()
 
         posts_data = []
         for post in posts:
-            if hasattr(post.user, 'userprofile'):
-                avatar = post.user.userprofile.avatar_image_url
-            else:
-                avatar = get_default_avatar(self.request)
             data = {
                 'id': post.id,
                 'image_url': post.image_url,
                 'description': post.description,
                 'user': post.user,
-                'avatar_image': avatar,
+                'avatar_image': post.user.userprofile.avatar_url,
                 'total_likes': post.total_likes,
                 'total_comments': post.total_comments,
                 'created_at': post.created_at,
@@ -120,6 +114,7 @@ class PostDetailView(AllPostsListView):
             return HttpResponseRedirect(reverse_lazy('account_login'))
         return super().post(request, *args, **kwargs)
 
+
 class CommentUpdateView(UpdateView):
     template_name = 'comment_update.html'
     model = Comment
@@ -143,39 +138,31 @@ class CommentDeleteView(DeleteView):
 
 class PostUserGridView(ListView):
     template_name = 'post_user_grid.html'
-    model = Post
-    context_object_name = 'posts'
 
     def get_queryset(self):
-        queryset = super().get_queryset()
         username = self.kwargs.get('username')
-        user = get_object_or_404(User, username=username)
-        queryset = queryset.filter(user=user)
+        queryset = get_object_or_404(User, username=username)
         return queryset
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        posts = context['posts']
+        profile_owner = self.get_queryset()
+        posts = Post.objects.filter(user=profile_owner)
+        context['posts'] = posts
         context['posts_count'] = posts.count()
+        context['profile_owner'] = profile_owner
 
-        f_post = posts.first()
-        post_user = f_post.user
-        context['post_user'] = f_post.user
+        avatar = profile_owner.userprofile.avatar_url
+        context['avatar'] = avatar
 
-        if hasattr(post_user, 'userprofile'):
-            avatar = post_user.userprofile.avatar_image_url
-        else:
-            avatar = get_default_avatar(self.request)
-        context['avatar_image'] = avatar
-
-        followers = Follow.objects.filter(following=f_post.user).count()
+        followers = Follow.objects.filter(following=profile_owner).count()
         context['followers'] = followers
 
-        following = Follow.objects.filter(follower=f_post.user).count()
+        following = Follow.objects.filter(follower=profile_owner).count()
         context['following'] = following
 
-        if f_post.user != self.request.user:
-            if Follow.objects.filter(follower=self.request.user, following=f_post.user).exists():
+        if profile_owner != self.request.user:
+            if Follow.objects.filter(follower=self.request.user, following=profile_owner).exists():
                 context['is_followed'] = True
 
         return context

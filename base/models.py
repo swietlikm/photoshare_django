@@ -1,14 +1,46 @@
-from django.contrib.auth.models import User
-from django.db import models
 import uuid
 
+from django.contrib.auth.models import AbstractUser
+from django.conf import settings
+from django.db import models
 from django.utils.safestring import mark_safe
 
 
+class User(AbstractUser):
+
+    def save(self, *args, **kwargs):
+        super().save(*args, **kwargs)
+        UserProfile.objects.get_or_create(user=self)
+
+
+class UserProfile(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='userprofile')
+    avatar = models.ImageField(blank=True)
+
+    objects = models.Manager()
+
+    def __str__(self):
+        return f"@{self.user}"
+
+    @property
+    def avatar_url(self):
+        try:
+            img = self.avatar.url
+        except:
+            img = self.get_default_avatar()
+        return img
+
+    def get_default_avatar(self):
+        url = settings.MEDIA_URL + 'default_user_avatar.jpg'
+        print(url)
+        return url
+        #domain = request.build_absolute_uri('/')[:-1]
+        #return f'{domain}\images\default_user_avatar.jpg'
+
 class Post(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    image = models.ImageField(blank=False)
-    description = models.TextField(null=True, blank=True)
+    image = models.ImageField()
+    description = models.TextField(blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     likes = models.ManyToManyField(User, related_name='postlikes', blank=True)
@@ -70,22 +102,4 @@ class Comment(models.Model):
         return f"@{self.user} | {self.text}"
 
     class Meta:
-        ordering = ['-created_at']
-
-
-class UserProfile(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='userprofile')
-    avatar_image = models.ImageField(blank=True)
-
-    objects = models.Manager()
-
-    def __str__(self):
-        return f"@{self.user}"
-
-    @property
-    def avatar_image_url(self):
-        try:
-            img = self.avatar_image.url
-        except:
-            img = '\static\images\default_user_avatar.jpg'
-        return img
+        ordering = ['created_at']

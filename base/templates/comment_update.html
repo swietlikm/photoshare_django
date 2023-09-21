@@ -1,26 +1,11 @@
-{% extends 'base.html' %}
-{% block title %}PhotoShare{% endblock %}
+{% extends 'simple.html' %}
+{% block title %}PhotoShare - Update comment{% endblock %}
 {% load crispy_forms_tags %}
-{% load account %}
-{% user_display user %}
-{% block content %}
-<div class="container mt-5">
-        <div class="row justify-content-center">
-            <div class="col-xl-6">
-                <div class="card border-0 shadow-sm">
-                    <div class="card-body p-0">
-                        <div class="row no-gutters">
-                            <div class="p-5">
-                                <form method="POST">
-                                    {% csrf_token %}
-                                    {{ form|crispy }}
-                                    <input type="submit" class="btn btn-primary" value="Change">
-                                </form>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-</div>
+
+{% block inner_content %}
+<form method="POST">
+    {% csrf_token %}
+    {{ form|crispy }}
+    <input type="submit" class="btn btn-primary" value="Change">
+</form>
 {% endblock %}

@@ -1,22 +1,16 @@
 {% extends 'base.html' %}
-{% block title %}BankApp - Homepage{% endblock %}
-{% load crispy_forms_tags %}
-{% load account %}
-{% user_display user %}
+
 {% block content %}
 <div class="container mt-5">
     <div class="row justify-content-center">
-        <div class="col-xl-12">
+        <div class="col-xl-8">
             <div class="card border-0 shadow-sm">
                 <div class="card-body p-0">
                     <div class="row no-gutters">
                         <div class="p-5">
-                            <div class="mb-4">
-                                <h3 class="h4 font-weight-bold text-primary">Hello</h3>
-                            </div>
-                            <div class="card-text">
-                                ...
-                            </div>
+                            {% block inner_content %}
+
+                            {% endblock %}
                         </div>
                     </div>
                 </div>

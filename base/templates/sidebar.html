@@ -32,18 +32,30 @@
             {% if user.is_authenticated %}
             <li class="nav-item object-fit-cover rounded-circle">
                 <a href="{% url 'post_user_grid' user.username %}" class="nav-link px-0 py-3">
-                    <img src="{{ user.userprofile.avatar_image_url }}" alt="{{ user.username }} profile image" width="24" height="24" class="fs-4 rounded-circle"> <span class="ms-1 d-none d-sm-inline text-primary align-bottom"> {{ user.username|title }}</span>
+                    <img src="{{ user.userprofile.avatar_url }}" alt="{{ user.username }} profile image" width="24" height="24" class="fs-4 rounded-circle"> <span class="ms-1 d-none d-sm-inline text-primary align-bottom"> {{ user.username|title }}</span>
                 </a>
             </li>
-            {% endif %}
-            {% if user.is_staff %}
+                {% if user.is_staff %}
+                <li class="nav-item">
+                    <a href="{% url 'admin:index' %}" class="nav-link align-middle px-0">
+                        <i class="fs-4 bi-gear"></i> <span class="ms-1 d-none d-sm-inline text-danger">Admin</span>
+                    </a>
+                </li>
+                {% endif %}
+            {% else %}
+            <li class="nav-item ">
+                <a href="{% url 'account_login' %}" class="nav-link align-middle px-0">
+                    <i class="fs-4 bi-person-circle"></i> <span class="ms-1 d-none d-sm-inline">Login</span>
+                </a>
+            </li>
             <li class="nav-item">
-                <a href="{% url 'admin:index' %}" class="nav-link align-middle px-0">
-                    <i class="fs-4 bi-gear"></i> <span class="ms-1 d-none d-sm-inline text-danger">Admin</span>
+                <a href="{% url 'account_signup' %}" class="nav-link align-middle px-0">
+                    <i class="fs-4 bi-person-add"></i> <span class="ms-1 d-none d-sm-inline">Register</span>
                 </a>
             </li>
             {% endif %}
         </ul>
+        {% if user.is_authenticated %}
         <hr>
         <div class="dropdown pb-4">
             <a href="#" class="d-flex align-items-center text-primary text-decoration-none" id="dropdownUser1" data-bs-toggle="dropdown" aria-expanded="false">
@@ -55,9 +67,10 @@
                 <li>
                     <hr class="dropdown-divider">
                 </li>
-                <li><a class="dropdown-item" href="#">Sign out</a></li>
+                <li><a class="dropdown-item" href="{% url 'account_logout' %}">Sign out</a></li>
             </ul>
         </div>
+        {% endif %}
     </div>
 </div>
 {% comment %}

@@ -1,5 +1,7 @@
 {% extends 'base.html' %}
 {% load crispy_forms_tags %}
+{% load i18n %}
+
 {% block content %}
 <div id="main-wrapper" class="container mt-5 mb-5">
     <div class="row justify-content-center">
@@ -9,12 +11,15 @@
                     <div class="row no-gutters">
                         <div class="p-5 text-enter justify-content-center">
                             <div class="mb-4">
-                                <h3 class="h4 font-weight-bold text-primary">Register new account</h3>
+                                <h3 class="h4 font-weight-bold text-primary">{% trans 'Register new account' %}</h3>
                             </div>
-                            <form method="POST">
+                            <form id="signup_form" method="post" action="{% url 'account_signup' %}">
                                 {% csrf_token %}
                                 {{ form|crispy }}
-                                <button type="submit" class="btn btn-primary mt-1">Register</button>
+                                {% if redirect_field_value %}
+                                    <input type="hidden" name="{{ redirect_field_name }}" value="{{ redirect_field_value }}" />
+                                {% endif %}
+                                <button type="submit" class="btn btn-primary mt-1">{% trans 'Register' %}</button>
                             </form>
                         </div>
                     </div>

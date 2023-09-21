@@ -4,7 +4,6 @@ from . import views
 urlpatterns = [
     path('', views.AllPostsListView.as_view(), name='index'),
     path('<str:username>', views.PostUserGridView.as_view(), name='post_user_grid'),
-    path('profile', views.PostUserGridView.as_view(), name='user_profile'),
     path('profile/edit', views.UserProfileEditView.as_view(), name='user_profile_edit'),
 
     path('post/add/', views.PostAddView.as_view(), name='post_add'),

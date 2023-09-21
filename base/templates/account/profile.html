@@ -1,6 +1,7 @@
 {% extends 'base.html' %}
-{% block title %}BookingApp - account management{% endblock %}
+{% block title %}PhotoShare - Profile management{% endblock %}
 {% load crispy_forms_tags %}
+
 {% block content %}
 <div id="main-wrapper" class="container mt-5">
     <div class="row justify-content-center">
@@ -26,7 +27,7 @@
                                     {{form|crispy}}
                                     <input class="btn btn-primary" type="submit" value="Save">
                                 </form>
-                                <p class="mt-3">Change password <a href="{% url 'change_password' %}">here</a></p>
+                                <p class="mt-3">Change password <a href="{% url 'account_change_password' %}">here</a></p>
                             </div>
                         </div>
                     </div>

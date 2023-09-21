@@ -1,29 +1,14 @@
-{% extends 'base.html' %}
-{% block title %}BankApp - Homepage{% endblock %}
+{% extends 'simple.html' %}
+{% block title %}PhotoShare - Add new post{% endblock %}
 {% load crispy_forms_tags %}
-{% load account %}
-{% user_display user %}
-{% block content %}
-<div class="container mt-5">
-    <div class="row justify-content-center">
-        <div class="col-xl-8">
-            <div class="card border-0 shadow-sm">
-                <div class="card-body p-0">
-                    <div class="row no-gutters">
-                        <div class="p-5">
-                            <div class="mb-4">
-                                <h3 class="h4 font-weight-bold text-primary">Add new post</h3>
-                            </div>
-                            <form method="POST" enctype="multipart/form-data">
-                                {% csrf_token %}
-                                {{ form|crispy }}
-                                <input type="submit" class="btn btn-primary" value="Add">
-                            </form>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
+
+{% block inner_content %}
+<div class="mb-4">
+    <h3 class="h4 font-weight-bold text-primary">Add new post</h3>
 </div>
+<form method="POST" enctype="multipart/form-data">
+    {% csrf_token %}
+    {{ form|crispy }}
+    <input type="submit" class="btn btn-primary" value="Add">
+</form>
 {% endblock %}
