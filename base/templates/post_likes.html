@@ -1,0 +1,14 @@
+{% extends 'simple.html' %}
+{% block title %}PhotoShare - Add new post{% endblock %}
+{% load crispy_forms_tags %}
+
+{% block inner_content %}
+<div class="mb-4">
+    <h3 class="h4 font-weight-bold text-primary">Add new post</h3>
+</div>
+<form method="POST" enctype="multipart/form-data">
+    {% csrf_token %}
+    {{ form|crispy }}
+    <input type="submit" class="btn btn-primary" value="Add">
+</form>
+{% endblock %}
