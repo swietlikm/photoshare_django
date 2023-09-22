@@ -13,3 +13,5 @@
 - Display user profile
 - Change user data, add avatar
 - Display posts sorted by hashtags
+
+![image](https://github.com/swietlikm/photoshare_django/assets/121583766/60743a97-9ab1-4a00-bed8-bdabcb5f0ca0)
