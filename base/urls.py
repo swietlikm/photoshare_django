@@ -4,10 +4,14 @@ from . import views
 urlpatterns = [
     path('', views.AllPostsListView.as_view(), name='index'),
     path('<str:username>', views.PostUserGridView.as_view(), name='post_user_grid'),
+    path('<str:username>/followers', views.UserFollowersView.as_view(), name='user_followers'),
+    path('<str:username>/following', views.UserFollowingView.as_view(), name='user_following'),
     path('profile/edit', views.UserProfileEditView.as_view(), name='user_profile_edit'),
 
     path('post/add/', views.PostAddView.as_view(), name='post_add'),
     path('post/<uuid:pk>/', views.PostDetailView.as_view(), name='post_details'),
+    path('post/<uuid:pk>/likes', views.PostLikesView.as_view(), name='post_likes'),
+
     path('post/<uuid:pk>/update', views.PostUpdateView.as_view(), name='post_update'),
     path('post/<uuid:pk>/delete', views.PostDeleteView.as_view(), name='post_delete'),
 

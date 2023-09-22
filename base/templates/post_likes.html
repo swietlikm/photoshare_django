@@ -1,14 +1,24 @@
 {% extends 'simple.html' %}
-{% block title %}PhotoShare - Add new post{% endblock %}
-{% load crispy_forms_tags %}
+{% block title %}PhotoShare - Post likes{% endblock %}
 
 {% block inner_content %}
 <div class="mb-4">
-    <h3 class="h4 font-weight-bold text-primary">Add new post</h3>
+    <h3 class="h4 font-weight-bold text-primary">Post likes:</h3>
 </div>
-<form method="POST" enctype="multipart/form-data">
-    {% csrf_token %}
-    {{ form|crispy }}
-    <input type="submit" class="btn btn-primary" value="Add">
-</form>
+<div class="">
+    <ul>
+    {% for user in post.likes_users %}
+        <li class="pb-3">
+            <a href="{% url 'post_user_grid' user.username %}" class="text-decoration-none fs-6 fw-bold">
+                <img src="{{ user.userprofile.avatar_url }}"
+                     width="32"
+                     height="32"
+                     class="object-fit-cover rounded-circle"
+                     alt="{{ user.username }} avatar">
+                 {{ user.username }}
+            </a>
+        </li>
+    {% endfor %}
+    </ul>
+</div>
 {% endblock %}

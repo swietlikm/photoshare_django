@@ -1,11 +1,15 @@
 # PhotoShare (during development)
 
 ## Features now:
-- Register/Login
-- Post image with description
-- See user profile
+- Registration/Authentication
+- Post image with description and hashtags
+- Update/Delete Post
+- Like/Unlike post
+- Display persons who liked the post
+- Display persons who are following specific user
+- Display persons who are followed by specific user
+- Add/Update/Delete comment to the post
 - Follow/unfollow user
-- Like/unlike post
-- Add comments to the post
-
-![image](https://github.com/swietlikm/photoshare_django/assets/121583766/05f6ff86-8794-4485-b304-9d458c145eb8)
+- Display user profile
+- Change user data, add avatar
+- Display posts sorted by hashtags

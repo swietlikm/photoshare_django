@@ -24,7 +24,7 @@
                         </form>
                         <button type="submit" style="border: none; background-color: transparent;" name="post_like_id" value="{{post.id}}"><i class="bi bi-chat-quote" style="font-size: 1.5rem"></i></button>
                         <button type="submit" style="border: none; background-color: transparent;" name="post_like_id" value="{{post.id}}"><i class="bi bi-share" style="font-size: 1.5rem"></i></button>
-                        <p class="mt-3 mb-2">Likes: {{ post.total_likes }}</p>
+                        <a href="{% url 'post_likes' post.id %}" class="text-decoration-none"><p class="mt-3 mb-2">Likes: {{ post.total_likes }}</p></a>
                         <p class="fw-bold text-primary d-inline"><a href="{% url 'post_user_grid' post.user.username %}" class="text-decoration-none">{{ post.user.username }}</a></p>
                         <p>{{ post.description|hashtag }}</p>
                         {% if comments_enabled %}

@@ -1,10 +1,12 @@
 from django import forms
-from django.contrib.auth.models import User
 
 from .models import Post, Comment, UserProfile
 
 
 class PostForm(forms.ModelForm):
+    """
+    A form for creating or updating a Post object.
+    """
     class Meta:
         model = Post
         fields = ['image', 'description']
@@ -14,6 +16,9 @@ class PostForm(forms.ModelForm):
 
 
 class CommentForm(forms.ModelForm):
+    """
+    A form for creating or updating a Comment object.
+    """
     class Meta:
         model = Comment
         fields = ['text']
@@ -26,6 +31,9 @@ class CommentForm(forms.ModelForm):
 
 
 class UserProfileEditForm(forms.ModelForm):
+    """
+    A form for editing user profile information, including avatar, first name, and last name.
+    """
     class Meta:
         model = UserProfile
         fields = ['avatar']
@@ -34,12 +42,18 @@ class UserProfileEditForm(forms.ModelForm):
     last_name = forms.CharField(max_length=30, required=True)
 
     def __init__(self, *args, **kwargs):
+        """
+        Initialize the UserProfileEditForm with initial values for first name and last name.
+        """
         super().__init__(*args, **kwargs)
         user = self.instance.user
         self.fields['first_name'].initial = user.first_name
         self.fields['last_name'].initial = user.last_name
 
     def save(self, commit=True):
+        """
+        Save the UserProfileEditForm data, including updating the associated User object.
+        """
         user_profile = super().save(commit=False)
         user = user_profile.user
         user.first_name = self.cleaned_data['first_name']

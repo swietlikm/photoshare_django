@@ -63,7 +63,7 @@
             </a>
             <ul class="dropdown-menu dropdown-menu-dark text-small shadow">
                 <li><a class="dropdown-item" href="#">Settings</a></li>
-                <li><a class="dropdown-item" href="#">Profile</a></li>
+                <li><a class="dropdown-item" href="{% url 'user_profile_edit' %}">Profile</a></li>
                 <li>
                     <hr class="dropdown-divider">
                 </li>
@@ -73,45 +73,3 @@
         {% endif %}
     </div>
 </div>
-{% comment %}
-<div class="container-fluid">
-    <div class="row flex-nowrap">
-        <div class="d-flex flex-column flex-shrink-0 p-3 text-bg-dark" style="width: 280px;">
-            <a class="d-flex align-items-center mb-3 mb-md-0 me-md-auto text-white text-decoration-none" href="{% url 'index' %}">PhotoShare</a>
-            <ul class="nav nav-pills flex-column mb-auto">
-                <li class="nav-item">
-                    <a class="nav-link" href="{% url 'index' %}">Home</a>
-                </li>
-                {% if user.is_authenticated %}
-                <li class="nav-item">
-                    <a class="nav-link" href="{% url 'post_add' %}">Add</a>
-                </li>
-                {% if user.is_staff %}
-                <li class="nav-item">
-                    <a class="nav-link text-danger" href="{% url 'admin:index' %}">Admin</a>
-                </li>
-                {% endif %}
-                <li class="nav-item dropdown dropdown-left">
-                    <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                        {{user.username|title}}
-                    </a>
-                    <ul class="dropdown-menu dopdown-menu-end">
-                        <li><a class="dropdown-item" href="{% url 'post_user_grid' request.user.username %}"><i class="bi bi-person"></i> Profile</a></li>
-                        <li><a class="dropdown-item" href="{% url 'user_profile_edit' %}"><i class="bi bi-person"></i> Manage account</a></li>
-                        <li><hr class="dropdown-divider"></li>
-                        <li><a class="dropdown-item" href="{% url 'account_logout' %}"><i class="bi bi-box-arrow-right"></i> Logout</a></li>
-                    </ul>
-                </li>
-                {% else %}
-                <li class="nav-item">
-                    <a class="nav-link" href="{% url 'account_login' %}">Login</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="{% url 'account_signup' %}">Register</a>
-                </li>
-                {% endif %}
-            </ul>
-        </div>
-    </div>
-</div>
-{% endcomment %}

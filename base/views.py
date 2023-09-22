@@ -9,11 +9,13 @@ from .models import User, UserProfile, Post, Comment, Follow
 
 
 def get_default_avatar(request):
+    """Get the default avatar URL for a user."""
     domain = request.build_absolute_uri('/')[:-1]
     return f'{domain}\images\default_user_avatar.jpg'
 
 
 class AllPostsListView(ListView):
+    """View for displaying a list of all posts."""
     template_name = 'post_list.html'
     model = Post
     context_object_name = 'posts'
@@ -56,6 +58,7 @@ class AllPostsListView(ListView):
 
 
 class PostAddView(LoginRequiredMixin, CreateView):
+    """View for adding new posts."""
     template_name = 'post_add.html'
     model = Post
     fields = ['image', 'description']
@@ -67,6 +70,7 @@ class PostAddView(LoginRequiredMixin, CreateView):
 
 
 class PostUpdateView(LoginRequiredMixin, UpdateView):
+    """View for updating existing posts."""
     template_name = 'post_update.html'
     model = Post
     fields = ['image', 'description']
@@ -74,12 +78,14 @@ class PostUpdateView(LoginRequiredMixin, UpdateView):
 
 
 class PostDeleteView(LoginRequiredMixin, DeleteView):
+    """View for deleting posts."""
     template_name = 'post_delete.html'
     model = Post
     success_url = reverse_lazy('index')
 
 
 class PostDetailView(AllPostsListView):
+    """View for displaying the details of a specific post."""
     template_name = 'post_details.html'
 
     def get_queryset(self):
@@ -116,6 +122,7 @@ class PostDetailView(AllPostsListView):
 
 
 class CommentUpdateView(UpdateView):
+    """View for updating comments."""
     template_name = 'comment_update.html'
     model = Comment
     fields = ['text']
@@ -127,6 +134,7 @@ class CommentUpdateView(UpdateView):
 
 
 class CommentDeleteView(DeleteView):
+    """View for deleting comments."""
     template_name = 'comment_delete.html'
     model = Comment
 
@@ -137,6 +145,7 @@ class CommentDeleteView(DeleteView):
 
 
 class PostUserGridView(ListView):
+    """View for displaying posts of a specific user."""
     template_name = 'post_user_grid.html'
 
     def get_queryset(self):
@@ -181,6 +190,7 @@ class PostUserGridView(ListView):
 
 
 class UserProfileEditView(LoginRequiredMixin, UpdateView):
+    """View for editing user profiles."""
     model = UserProfile
     template_name = 'user_profile_edit.html'
     form_class = UserProfileEditForm
@@ -196,13 +206,57 @@ class UserProfileEditView(LoginRequiredMixin, UpdateView):
 
 
 class HashtagPostListView(AllPostsListView):
+    """View for displaying posts with a specific hashtag."""
     template_name = 'explore_tags_list.html'
 
     def get_queryset(self):
         hashtag = self.kwargs['hashtag']
-        return Post.objects.filter(description__contains=f'#{hashtag}')
+        return Post.objects.filter(description__icontains=f'#{hashtag}')
 
     def get_context_data(self, *, object_list=None, **kwargs):
         context = super().get_context_data()
         context['hashtag'] = self.kwargs['hashtag']
         return context
+
+
+class PostLikesView(DetailView):
+    """View for displaying likes on a post."""
+    template_name = 'post_likes.html'
+    model = Post
+    context_object_name = 'post'
+
+    def get_object(self, queryset=None):
+        obj = super().get_object(queryset)
+        obj.likes_users = obj.likes.all()
+        return obj
+
+
+class UserFollowersView(ListView):
+    """View for displaying a user's followers."""
+    template_name = 'users_listing.html'
+    context_object_name = 'followers'
+    extra_context = {'action': 'followers'}
+
+    def get_queryset(self):
+        username = self.kwargs['username']
+        user = get_object_or_404(User, username=username)
+        queryset = Follow.objects.filter(following=user).select_related('follower')
+        follower_users = [user.follower for user in queryset]
+        return follower_users
+
+    def get_context_data(self, *, object_list=None, **kwargs):
+        context = super().get_context_data(object_list=None, **kwargs)
+        context['username'] = self.kwargs['username']
+        return context
+
+
+class UserFollowingView(UserFollowersView):
+    """View for displaying users that a user is following."""
+    extra_context = {'action': 'following'}
+
+    def get_queryset(self):
+        username = self.kwargs['username']
+        user = get_object_or_404(User, username=username)
+        queryset = Follow.objects.filter(follower=user).select_related('following')
+        follower_users = [user.following for user in queryset]
+        return follower_users

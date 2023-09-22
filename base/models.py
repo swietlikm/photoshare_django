@@ -1,7 +1,7 @@
 import uuid
 
-from django.contrib.auth.models import AbstractUser
 from django.conf import settings
+from django.contrib.auth.models import AbstractUser
 from django.db import models
 from django.utils.safestring import mark_safe
 
@@ -14,8 +14,8 @@ class User(AbstractUser):
 
 
 class UserProfile(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='userprofile')
     avatar = models.ImageField(blank=True)
+    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='userprofile')
 
     objects = models.Manager()
 
@@ -26,16 +26,15 @@ class UserProfile(models.Model):
     def avatar_url(self):
         try:
             img = self.avatar.url
-        except:
+        except ValueError:
             img = self.get_default_avatar()
         return img
 
-    def get_default_avatar(self):
+    @staticmethod
+    def get_default_avatar():
         url = settings.MEDIA_URL + 'default_user_avatar.jpg'
-        print(url)
         return url
-        #domain = request.build_absolute_uri('/')[:-1]
-        #return f'{domain}\images\default_user_avatar.jpg'
+
 
 class Post(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
@@ -55,7 +54,7 @@ class Post(models.Model):
     def image_url(self):
         try:
             img = self.image.url
-        except:
+        except ValueError:
             img = ''
         return img
 

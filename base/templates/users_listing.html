@@ -1,24 +1,24 @@
 {% extends 'simple.html' %}
-{% block title %}PhotoShare - Post likes{% endblock %}
+{% block title %}PhotoShare - {{ action|title }}{% endblock %}
 
 {% block inner_content %}
 <div class="mb-4">
-    <h3 class="h4 font-weight-bold text-primary">Post likes:</h3>
+    <h3 class="h4 font-weight-bold text-primary">{{ username }} - {{ action }}:</h3>
 </div>
 <div class="">
     <ul>
-    {% for user in post.likes_users %}
-        <li class="pb-3">
-            <a href="{% url 'post_user_grid' user.username %}" class="text-decoration-none fs-6 fw-bold">
-                <img src="{{ user.userprofile.avatar_url }}"
-                     width="32"
-                     height="32"
-                     class="object-fit-cover rounded-circle"
-                     alt="{{ user.username }} avatar">
-                 {{ user.username }}
-            </a>
-        </li>
-    {% endfor %}
+        {% for follower in followers %}
+            <li class="pb-3">
+                <a href="{% url 'post_user_grid' follower.username %}" class="text-decoration-none fs-6 fw-bold">
+                    <img src="{{ follower.userprofile.avatar_url }}"
+                         width="32"
+                         height="32"
+                         class="object-fit-cover rounded-circle"
+                         alt="{{ follower.username }} avatar">
+                     {{ follower.username }}
+                </a>
+            </li>
+        {% endfor %}
     </ul>
 </div>
 {% endblock %}
