@@ -1,3 +1,4 @@
+import re
 import uuid
 
 from django.conf import settings
@@ -36,6 +37,18 @@ class UserProfile(models.Model):
         return url
 
 
+class Hashtag(models.Model):
+    name = models.CharField(max_length=255, unique=True)
+
+    objects = models.Manager()
+
+    def __str__(self):
+        return self.name
+
+    def get_count(self):
+        return self.posts.count()
+
+
 class Post(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     image = models.ImageField()
@@ -44,11 +57,27 @@ class Post(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
     likes = models.ManyToManyField(User, related_name='postlikes', blank=True)
     user = models.ForeignKey(User, related_name='posts', on_delete=models.DO_NOTHING)
+    hashtags = models.ManyToManyField(Hashtag, related_name='posts', blank=True)
 
     objects = models.Manager()
 
     def __str__(self):
         return self.user.username
+
+    def save(self, *args, **kwargs):
+        super().save(*args, **kwargs)
+        self.extract_and_associate_hashtags()
+
+    def extract_and_associate_hashtags(self):
+        # Extract hashtags from the description
+        hashtag_pattern = re.compile(r'\#\w+')
+        hashtags = re.findall(hashtag_pattern, str(self.description))
+
+        # Update or create hashtags and associate them with this post
+        for hashtag_text in hashtags:
+            hashtag, created = Hashtag.objects.get_or_create(name=hashtag_text[1:])
+            hashtag.save()
+            self.hashtags.add(hashtag)
 
     @property
     def image_url(self):
@@ -58,7 +87,7 @@ class Post(models.Model):
             img = ''
         return img
 
-    def image_preview(self):  # new
+    def image_preview(self):
         return mark_safe(f'<img src = "{self.image_url}" width = "300"/>')
 
     @property

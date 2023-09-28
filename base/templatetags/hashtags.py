@@ -10,7 +10,7 @@ register = template.Library()
 def hashtag(value):
     def repl(match):
         hashtag = match.group(1)
-        url = reverse('explore_tags', args=[hashtag[1:]])
+        url = reverse('explore_hashtag', args=[hashtag[1:]])
         return f'<a href="{url}" class="text-decoration-none">{hashtag}</a>'
 
     pattern = r'(#\w+)'

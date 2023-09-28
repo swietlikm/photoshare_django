@@ -1,21 +1,32 @@
-{% extends 'base.html' %}
+{% extends 'simple.html' %}
+{% load crispy_forms_tags %}
 
-{% block content %}
-<div class="container mt-5">
-    <div class="row justify-content-center">
-        <div class="col-xl-8">
-            <div class="card border-0 shadow-sm">
-                <div class="card-body p-0">
-                    <div class="row no-gutters">
-                        <div class="p-5">
-                            {% block inner_content %}
-
-                            {% endblock %}
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
+{% block inner_content %}
+<div class="mb-4">
+    <h3 class="h4 font-weight-bold text-primary">Search</h3>
 </div>
+<form method="GET">
+    {{ form|crispy }}
+    <button type="submit" class="btn btn-primary">Search</button>
+</form>
+{% if search_performed %}
+    <div class="my-4">
+        <h4 class="h4 font-weight-bold text-primary">Search results:</h4>
+    </div>
+
+    {% if users_result %}
+        <ul>
+        {% for user in users_result %}
+            <li><a href="{% url 'post_user_grid' user.username %}" class="text-decoration-none">{{ user.username }}</a></li>
+        {% endfor %}
+        </ul>
+    {% endif %}
+
+    {% if not match %}
+        <div class="my-4">
+            <h5 class="h5 text-secondary">No match</h5>
+        </div>
+    {% endif %}
+{% endif %}
+
 {% endblock %}

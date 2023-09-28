@@ -62,3 +62,11 @@ class UserProfileEditForm(forms.ModelForm):
             user.save()
             user_profile.save()
         return user_profile
+
+
+CHOICES = [("user", "User"), ("hashtag", "Hashtag")]
+
+
+class SearchForm(forms.Form):
+    text = forms.CharField(required=True)
+    choice = forms.ChoiceField(widget=forms.RadioSelect, choices=CHOICES, initial=CHOICES[0][0])

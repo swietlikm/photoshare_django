@@ -1,17 +1,15 @@
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.db.models import Q, Value, Count, CharField, F
+from django.db.models.functions import Replace
 from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse_lazy, reverse
-from django.views.generic import CreateView, UpdateView, ListView, DeleteView, DetailView
+from django.views import View
+from django.views.generic import CreateView, UpdateView, ListView, DeleteView, DetailView, FormView, TemplateView
+import re
 
-from .forms import CommentForm, UserProfileEditForm
-from .models import User, UserProfile, Post, Comment, Follow
-
-
-def get_default_avatar(request):
-    """Get the default avatar URL for a user."""
-    domain = request.build_absolute_uri('/')[:-1]
-    return f'{domain}\images\default_user_avatar.jpg'
+from .forms import CommentForm, UserProfileEditForm, SearchForm
+from .models import User, UserProfile, Hashtag, Post, Comment, Follow
 
 
 class AllPostsListView(ListView):
@@ -211,7 +209,7 @@ class HashtagPostListView(AllPostsListView):
 
     def get_queryset(self):
         hashtag = self.kwargs['hashtag']
-        return Post.objects.filter(description__icontains=f'#{hashtag}')
+        return Post.objects.filter(hashtags__name=f'{hashtag}')
 
     def get_context_data(self, *, object_list=None, **kwargs):
         context = super().get_context_data()
@@ -260,3 +258,36 @@ class UserFollowingView(UserFollowersView):
         queryset = Follow.objects.filter(follower=user).select_related('following')
         follower_users = [user.following for user in queryset]
         return follower_users
+
+
+class SearchView(FormView):
+    template_name = 'search.html'
+    form_class = SearchForm
+
+    def get(self, request, *args, **kwargs):
+        context = self.get_context_data()
+        form = self.get_form_class()
+
+        text = request.GET.get('text')
+        choice = request.GET.get('choice')
+
+        form = form(request.GET) if request.GET else form()
+
+        if form.is_valid():
+            context['search_performed'] = True
+
+            if choice == 'user':
+                users_result = User.objects.filter(
+                    Q(username__istartswith=text) |
+                    Q(username__icontains=text)
+                )
+                context['users_result'] = users_result
+                context['match'] = users_result.exists()
+
+            elif choice == 'hashtag':
+                hashtags_result = Hashtag.objects.filter(name__icontains=f'{text}')
+                context['hashtags_result'] = hashtags_result
+                context['match'] = hashtags_result.exists()
+
+        context['form'] = form
+        return self.render_to_response(context)

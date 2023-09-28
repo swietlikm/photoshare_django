@@ -3,6 +3,8 @@ from . import views
 
 urlpatterns = [
     path('', views.AllPostsListView.as_view(), name='index'),
+    path('s/index', views.SearchView.as_view(), name='search'),
+
     path('<str:username>', views.PostUserGridView.as_view(), name='post_user_grid'),
     path('<str:username>/followers', views.UserFollowersView.as_view(), name='user_followers'),
     path('<str:username>/following', views.UserFollowingView.as_view(), name='user_following'),
@@ -18,5 +20,5 @@ urlpatterns = [
     path('comment/<int:pk>/update/', views.CommentUpdateView.as_view(), name='comment_update'),
     path('comment/<int:pk>/delete/', views.CommentDeleteView.as_view(), name='comment_delete'),
 
-    path('explore/tags/<str:hashtag>', views.HashtagPostListView.as_view(), name='explore_tags'),
+    path('explore/tags/<str:hashtag>', views.HashtagPostListView.as_view(), name='explore_hashtag'),
 ]
