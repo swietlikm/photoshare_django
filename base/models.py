@@ -112,6 +112,14 @@ class Follow(models.Model):
     def __str__(self):
         return f"{self.follower.username} follows {self.following.username}"
 
+    def save(self, *args, **kwargs):
+        super().save(*args, **kwargs)
+
+        # Create a notification when a user starts following another user
+        if self.following != self.follower:
+            message = 'started following you'
+            Notification.objects.create(action_user=self.follower, recipient_user=self.following, message=message)
+
     class Meta:
         unique_together = ['follower', 'following']
 
@@ -131,3 +139,19 @@ class Comment(models.Model):
 
     class Meta:
         ordering = ['created_at']
+
+
+class Notification(models.Model):
+    action_user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='notifications_sent')
+    recipient_user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='notifications_received')
+    message = models.CharField(max_length=255)
+    timestamp = models.DateTimeField(auto_now_add=True)
+    is_read = models.BooleanField(default=False)
+
+    objects = models.Manager()
+
+    def __str__(self):
+        return self.message
+
+    class Meta:
+        ordering = ['-timestamp']

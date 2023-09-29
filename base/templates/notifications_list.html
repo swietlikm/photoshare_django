@@ -1,0 +1,40 @@
+{% extends 'simple.html' %}
+
+{% block inner_content %}
+<style>
+    .unread-notification {
+    border: 2px solid #ff9800;
+    transition: background-color 0.3s;
+}
+    .unread-notification:hover {
+        background-color: #ffff00;
+    }
+}
+</style>
+{% for notification in notifications %}
+    <div class="card mb-3 {% if not notification.is_read %}unread-notification{% endif %}">
+        <div class="card-body">
+            <div class="d-flex align-items-center">
+                <a href="{% url 'post_user_grid' notification.action_user.username %}" class="text-decoration-none">
+                    <img src="{{ notification.action_user.userprofile.avatar_url }}" alt="user {{ notification.action_user.username }} avatar"
+                        width="64"
+                        height="64"
+                        class="rounded-circle me-3 shadow">
+                </a>
+                <div>
+                    <h5 class="mb-0">
+                        <a href="{% url 'post_user_grid' notification.action_user.username %}" class="text-dark text-decoration-none">{{ notification.action_user }}</a>
+                    </h5>
+                    <p class="mb-0 text-muted">{{ notification.timestamp|timesince }} ago</p>
+                </div>
+            </div>
+            <p class="mt-3">{{ notification.message }}</p>
+        </div>
+    </div>
+{% empty %}
+    <p class="fs-3 text-secondary">No notifications yet</p>
+{% endfor %}
+
+
+
+{% endblock %}

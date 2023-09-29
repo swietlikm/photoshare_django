@@ -4,6 +4,22 @@
 {% load hashtags %}
 {% block content %}
 <div class="container mt-5">
+    <div class="row justify-content-center pb-3">
+        <div class="col-xl-6">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body p-0">
+                    <div class="row no-gutters">
+                        <div class="p-5">
+                            <div class="h3 fs-2 text-primary pb-3">
+                                #{{ hashtag }}
+                            </div>
+                            <p class="fs-3 text-secondary">Posts: {{ hashtag_count }}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
     {% for post in posts %}
         {% include 'single_post.html' %}
     {% empty %}

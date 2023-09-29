@@ -9,7 +9,7 @@ from django.views.generic import CreateView, UpdateView, ListView, DeleteView, D
 import re
 
 from .forms import CommentForm, UserProfileEditForm, SearchForm
-from .models import User, UserProfile, Hashtag, Post, Comment, Follow
+from .models import User, UserProfile, Hashtag, Post, Comment, Follow, Notification
 
 
 class AllPostsListView(ListView):
@@ -214,6 +214,7 @@ class HashtagPostListView(AllPostsListView):
     def get_context_data(self, *, object_list=None, **kwargs):
         context = super().get_context_data()
         context['hashtag'] = self.kwargs['hashtag']
+        context['hashtag_count'] = self.get_queryset().count()
         return context
 
 
@@ -291,3 +292,12 @@ class SearchView(FormView):
 
         context['form'] = form
         return self.render_to_response(context)
+
+
+class NotificationListView(LoginRequiredMixin, ListView):
+    template_name = 'notifications_list.html'
+    context_object_name = 'notifications'
+
+    def get_queryset(self):
+        queryset = Notification.objects.filter(recipient_user=self.request.user).select_related('action_user')
+        return queryset

@@ -17,7 +17,28 @@
     {% if users_result %}
         <ul>
         {% for user in users_result %}
-            <li><a href="{% url 'post_user_grid' user.username %}" class="text-decoration-none">{{ user.username }}</a></li>
+            <li class="py-2">
+                <a href="{% url 'post_user_grid' user.username %}" class="text-decoration-none">
+                    <img src="{{ user.userprofile.avatar_url }}" alt="user {{ user.username }} avatar"
+                         width="32"
+                         height="32"
+                         class="object-fit-cover rounded-circle">
+                     {{ user.username }}
+                </a>
+            </li>
+        {% endfor %}
+        </ul>
+    {% endif %}
+
+    {% if hashtags_result %}
+        <ul>
+        {% for hashtag in hashtags_result %}
+            <li class="py-2">
+                <a href="{% url 'explore_hashtag' hashtag %}" class="text-decoration-none">
+                     #{{ hashtag }}
+                </a>
+                ({{ hashtag.get_count }})
+            </li>
         {% endfor %}
         </ul>
     {% endif %}
