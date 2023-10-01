@@ -301,3 +301,19 @@ class NotificationListView(LoginRequiredMixin, ListView):
     def get_queryset(self):
         queryset = Notification.objects.filter(recipient_user=self.request.user).select_related('action_user')
         return queryset
+
+    def post(self, request, *args, **kwargs):
+        notification_read_id = request.POST.get('notification_read_id')
+        mark_all_as_read = request.POST.get('mark_all_as_read')
+
+        if notification_read_id:
+            notification = Notification.objects.get(id=notification_read_id)
+            notification.is_read = not notification.is_read
+            notification.save()
+
+        if mark_all_as_read:
+            unread_notifications = Notification.objects.filter(recipient_user=self.request.user, is_read=False)
+            unread_notifications.update(is_read=True)
+
+        return HttpResponseRedirect(reverse_lazy('notifications'))
+
