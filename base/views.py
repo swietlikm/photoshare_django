@@ -55,6 +55,16 @@ class AllPostsListView(ListView):
         return HttpResponseRedirect(request.path_info)
 
 
+class AllPostsFollowedListView(LoginRequiredMixin, AllPostsListView):
+    template_name = 'post_list_followed.html'
+
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        followed_users = Follow.objects.filter(follower=self.request.user).values('following')
+        followed_posts = queryset.filter(user__in=followed_users).distinct()
+        return followed_posts
+
+
 class PostAddView(LoginRequiredMixin, CreateView):
     """View for adding new posts."""
     template_name = 'post_add.html'

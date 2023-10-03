@@ -1,5 +1,5 @@
 {% extends 'base.html' %}
-{% block title %}PhotoShare - Homepage{% endblock %}
+{% block title %}PhotoShare - Followed user's posts{% endblock %}
 
 {% block content %}
 <div class="container mt-5">
@@ -9,8 +9,8 @@
                 <div class="card-body p-0">
                     <div class="row no-gutters">
                         <nav class="nav px-3 fs-5 pb-2">
-                          <a class="nav-link active" aria-current="page" href="{% url 'index' %}">All Posts</a><div class="vr"></div>
-                          <a class="nav-link text-secondary" href="{% url 'posts_followed' %}">Followed</a>
+                          <a class="nav-link text-secondary" aria-current="page" href="{% url 'index' %}">All Posts</a><div class="vr"></div>
+                          <a class="nav-link active" href="{% url 'posts_followed' %}">Followed</a>
                         </nav>
                         <hr>
                     </div>
@@ -24,7 +24,7 @@
     <div class="row justify-content-center mb-4">
         <div class="col-xl-6">
             <div class="p-5 ">
-                <h3>Create your first post ...</h3>
+                <h3>Nothing here just yet...</h3>
             </div>
         </div>
     </div>

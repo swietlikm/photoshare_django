@@ -14,6 +14,7 @@ urlpatterns = [
     path('post/add/', views.PostAddView.as_view(), name='post_add'),
     path('post/<uuid:pk>/', views.PostDetailView.as_view(), name='post_details'),
     path('post/<uuid:pk>/likes', views.PostLikesView.as_view(), name='post_likes'),
+    path('posts/followed/', views.AllPostsFollowedListView.as_view(), name='posts_followed'),
 
     path('post/<uuid:pk>/update', views.PostUpdateView.as_view(), name='post_update'),
     path('post/<uuid:pk>/delete', views.PostDeleteView.as_view(), name='post_delete'),
