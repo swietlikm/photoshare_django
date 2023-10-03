@@ -36,6 +36,8 @@ class UserProfile(models.Model):
         url = settings.MEDIA_URL + 'default_user_avatar.jpg'
         return url
 
+    def get_unread_val(self):
+        return Notification.objects.filter(is_read=False, recipient_user=self.user).count()
 
 class Hashtag(models.Model):
     name = models.CharField(max_length=255, unique=True)
@@ -137,13 +139,34 @@ class Comment(models.Model):
     def __str__(self):
         return f"@{self.user} | {self.text}"
 
+    def save(self, *args, **kwargs):
+        super().save(*args, **kwargs)
+
+        # Create a notification when a user starts following another user
+        if self.user != self.post.user:
+            message = 'added comment to your post'
+            Notification.objects.create(
+                action_user=self.user,
+                action_comment=self,
+                recipient_user=self.post.user,
+                message=message
+            )
+
     class Meta:
         ordering = ['created_at']
 
 
 class Notification(models.Model):
-    action_user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='notifications_sent')
     recipient_user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='notifications_received')
+
+    action_user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='notifications_sent')
+    action_post = models.ForeignKey(Post, on_delete=models.CASCADE, related_name='posts', blank=True, null=True)
+    action_comment = models.ForeignKey(Comment,
+                                       on_delete=models.CASCADE,
+                                       related_name='comments',
+                                       blank=True,
+                                       null=True)
+
     message = models.CharField(max_length=255)
     timestamp = models.DateTimeField(auto_now_add=True)
     is_read = models.BooleanField(default=False)

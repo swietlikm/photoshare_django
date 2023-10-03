@@ -19,9 +19,15 @@
                     <i class="fs-4 bi-compass"></i> <span class="ms-1 d-none d-sm-inline">Explore</span>
                 </a>
             </li>
-            <li class="nav-item ">
+            <li class="nav-item">
                 <a href="{% url 'notifications' %}" class="nav-link align-middle px-0">
-                    <i class="fs-4 bi-bell"></i> <span class="ms-1 d-none d-sm-inline">Notifications</span>
+                    <i class="fs-4 bi-bell{% if user.userprofile.get_unread_val %}-fill text-danger{% endif %}"></i>
+                    {% if user.userprofile.get_unread_val %}
+                      <span class="position-absolute translate-middle badge rounded-pill bg-danger">
+                        {{ user.userprofile.get_unread_val }}
+                      </span>
+                    {% endif %}
+                    <span class="ms-1 d-none d-sm-inline">Notifications</span>
                 </a>
             </li>
             <li class="nav-item">
@@ -32,7 +38,8 @@
             {% if user.is_authenticated %}
             <li class="nav-item object-fit-cover rounded-circle">
                 <a href="{% url 'post_user_grid' user.username %}" class="nav-link px-0 py-3">
-                    <img src="{{ user.userprofile.avatar_url }}" alt="{{ user.username }} profile image" width="24" height="24" class="fs-4 rounded-circle"> <span class="ms-1 d-none d-sm-inline text-primary align-bottom"> {{ user.username|title }}</span>
+                    <img src="{{ user.userprofile.avatar_url }}" alt="{{ user.username }} profile image" width="24" height="24" class="fs-4 rounded-circle">
+                    <span class="ms-1 d-none d-sm-inline text-primary align-bottom"> {{ user.username|title }}</span>
                 </a>
             </li>
                 {% if user.is_staff %}

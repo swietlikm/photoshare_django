@@ -3,23 +3,27 @@
 {% block inner_content %}
 <style>
     .unread-notification {
-    border: 2px solid #ff9800;
-    transition: background-color 0.3s;
+    border: 2px solid #0000FF;
+    transition: background-color 0.5s;
 }
     .unread-notification:hover {
-        background-color: #ffff00;
+        background-color: WhiteSmoke;
     }
 }
 </style>
+<form method="POST" class="pb-3">
+    {% csrf_token %}
+    <button type="submit" name="mark_all_as_read" value="True" class="btn btn-primary">Mark all as read</button>
+</form>
 {% for notification in notifications %}
-    <div class="card mb-3 {% if not notification.is_read %}unread-notification{% endif %}">
+    <div class="card mb-2 {% if not notification.is_read %}unread-notification{% endif %}">
         <div class="card-body">
             <div class="d-flex align-items-center">
                 <a href="{% url 'post_user_grid' notification.action_user.username %}" class="text-decoration-none">
                     <img src="{{ notification.action_user.userprofile.avatar_url }}" alt="user {{ notification.action_user.username }} avatar"
                         width="64"
                         height="64"
-                        class="rounded-circle me-3 shadow">
+                        class="rounded-circle me-3 shadow object-fit-cover">
                 </a>
                 <div>
                     <h5 class="mb-0">
@@ -28,7 +32,32 @@
                     <p class="mb-0 text-muted">{{ notification.timestamp|timesince }} ago</p>
                 </div>
             </div>
-            <p class="mt-3">{{ notification.message }}</p>
+            <div style="position: absolute; top: 15px; right: 20px;">
+                <form method="POST">
+                    {% csrf_token %}
+                    {% if notification.is_read %}
+                        <button type="submit"
+                                style="border: none; background-color: transparent;"
+                                name="notification_read_id"
+                                value="{{notification.id}}">
+                            <i class="bi bi-check-square-fill" style="font-size: 1.5rem"></i>
+                        </button>
+                    {% else %}
+                    <button type="submit"
+                                style="border: none; background-color: transparent;"
+                                name="notification_read_id"
+                                value="{{notification.id}}">
+                            <i class="bi bi-check-square" style="font-size: 1.5rem"></i>
+                        </button>
+                    {% endif %}
+                </form>
+            </div>
+            <p class="mt-3">
+                {{ notification.message }} {% if notification.action_comment %}<a href="{% url 'post_details' notification.action_comment.post.id %}">here</a>{% endif %}
+            </p>
+                {% if notification.action_comment %}
+                        <p class="text-muted fst-italic">"{{ notification.action_comment.text }}"</p>
+                {% endif %}
         </div>
     </div>
 {% empty %}
